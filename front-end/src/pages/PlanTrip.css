@@ -1,0 +1,95 @@
+.city-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.city-search-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.city-dropdown {
+  position: absolute;
+  width: 100%;
+  max-height: 180px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 8px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.city-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.city-dropdown li:hover {
+  background: #ececec;
+}
+
+
+.trip-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.trip-form {
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.trip-form input,
+.trip-form select {
+  padding: 12px;
+  font-size: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+.trip-form input:focus,
+.trip-form select:focus {
+  border-color: teal;
+}
+
+.interests-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.checkbox-label {
+  font-size: 14px;
+}
+
+.submit-btn {
+  margin-top: 10px;
+  padding: 14px;
+  font-size: 18px;
+  background-color: teal;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+
+.submit-btn:hover {
+  background-color: #009688;
+}
