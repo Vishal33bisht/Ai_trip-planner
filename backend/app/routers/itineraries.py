@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from .. import schemas, crud, models
+from ..auth import get_current_user
 
-router = APIRouter(prefix="/api", tags=["itineraries"])
+router = APIRouter(prefix="/api/itineraries", tags=["Itineraries"])
 
 
 # -------- Cities --------
@@ -24,27 +25,13 @@ def create_city(city: schemas.CityCreate, db: Session = Depends(get_db)):
 
 
 # -------- Itineraries --------
-@router.post("/itineraries", response_model=schemas.ItineraryOut, status_code=status.HTTP_201_CREATED)
-def create_itinerary(itinerary_in: schemas.ItineraryCreate, db: Session = Depends(get_db)):
-    city = crud.get_city(db, itinerary_in.city_id)
-    if not city:
-        raise HTTPException(status_code=404, detail="City not found")
 
-    itinerary = crud.create_itinerary(db, itinerary_in)
-    return itinerary
-
-
-@router.get("/itineraries/{itinerary_id}", response_model=schemas.ItineraryOut)
-def get_itinerary(itinerary_id: int, db: Session = Depends(get_db)):
-    itinerary = crud.get_itinerary(db, itinerary_id)
-    if not itinerary:
-        raise HTTPException(status_code=404, detail="Itinerary not found")
-    return itinerary
-
-
-@router.get("/itineraries", response_model=List[schemas.ItineraryOut])
-def list_itineraries(
-    traveler_email: Optional[str] = None,
+@router.post("/", response_model=schemas.ItineraryOut)
+def create_itinerary(
+    itinerary_in: schemas.ItineraryRequest, 
     db: Session = Depends(get_db),
+    # For now, we'll use a hardcoded user_id if you haven't built the 'get_current_user' dependency yet.
+    # If you have JWT auth ready, replace 1 with the actual user ID.
+    user_id: int = 1 
 ):
-    return crud.list_itineraries(db, traveler_email=traveler_email)
+    return crud.create_itinerary(db, itinerary_in, user_id)

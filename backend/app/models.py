@@ -44,5 +44,19 @@ class Itinerary(Base):
     plan = Column(JSON, nullable=False)
 
     user = relationship("User", back_populates="itineraries", lazy="joined")
+    
+    day_plans = relationship("ItineraryDay", back_populates="itinerary", cascade="all, delete-orphan")
 
+class ItineraryDay(Base):
+    __tablename__ = "itinerary_days"
+
+    id = Column(Integer, primary_key=True, index=True)
+    itinerary_id = Column(Integer, ForeignKey("itineraries.id"))
+    
+    day_number = Column(Integer)
+    morning = Column(String)
+    afternoon = Column(String)
+    evening = Column(String)
+    
+    itinerary = relationship("Itinerary", back_populates="day_plans")
 

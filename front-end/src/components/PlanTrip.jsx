@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../services/api.js";
 import "../pages/PlanTrip.css";
+import { useNavigate } from "react-router-dom";
 
 const PlanTrip = () => {
   const [cities, setCities] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -43,10 +45,25 @@ const PlanTrip = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted:", form);
-    alert("Backend integration coming soon...");
+    if (!form.city || !form.days || !form.budget) {
+      alert("Please fill in the required fields (City, Days, Budget)");
+      return;
+    }
+try {
+      const response = await api.post("/itineraries", form);
+    
+      console.log("Success:", response.data);
+      alert("Itinerary Generated!");
+      
+      // 3. Redirect to a details page (we will build this next)
+      // navigate(`/trip/${response.data.id}`); 
+      
+    } catch (error) {
+      console.error("Error creating itinerary:", error);
+      alert("Failed to create plan. Make sure you are logged in or the backend is running.");
+    }
   };
 
   return (
