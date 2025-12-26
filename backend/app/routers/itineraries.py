@@ -35,3 +35,16 @@ def create_itinerary(
     user_id: int = 1 
 ):
     return crud.create_itinerary(db, itinerary_in, user_id)
+
+@router.get("/{itinerary_id}", response_model=schemas.ItineraryOut)
+def get_itinerary(itinerary_id: int, db: Session = Depends(get_db)):
+    db_itinerary = crud.get_itinerary(db, itinerary_id)
+    if not db_itinerary:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+    return db_itinerary
+
+# 3. LIST Itineraries (Optional, useful for history)
+@router.get("/", response_model=List[schemas.ItineraryOut])
+def list_itineraries(db: Session = Depends(get_db)):
+    # You can expand this to filter by user_id later
+    return crud.list_itineraries(db)

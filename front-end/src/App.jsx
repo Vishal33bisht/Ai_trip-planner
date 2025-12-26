@@ -7,6 +7,7 @@ import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import TripDetails from "./pages/TripDetails";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/plan-trip" element={<PlanTrip />} />
+        <Route path="/trip/:id" element={<TripDetails />} />
       </Routes>
       <Footer />
     </>

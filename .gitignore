@@ -1,0 +1,12 @@
+# Ignore Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# Ignore Backend Environment
+backend/venv/
+backend/__pycache__/
+backend/.env
+
+# Ignore Frontend Dependencies (just in case)
+front-end/node_modules/
+front-end/dist/

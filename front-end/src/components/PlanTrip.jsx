@@ -56,10 +56,7 @@ try {
     
       console.log("Success:", response.data);
       alert("Itinerary Generated!");
-      
-      // 3. Redirect to a details page (we will build this next)
-      // navigate(`/trip/${response.data.id}`); 
-      
+      navigate(`/trip/${response.data.id}`);
     } catch (error) {
       console.error("Error creating itinerary:", error);
       alert("Failed to create plan. Make sure you are logged in or the backend is running.");
