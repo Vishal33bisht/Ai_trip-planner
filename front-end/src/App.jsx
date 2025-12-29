@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import TripDetails from "./pages/TripDetails";
+import ExploreNearby from "./pages/ExploreNearby";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/plan-trip" element={<PlanTrip />} />
         <Route path="/trip/:id" element={<TripDetails />} />
+        <Route path="/explore-nearby" element={<ExploreNearby />} />
       </Routes>
       <Footer />
     </>

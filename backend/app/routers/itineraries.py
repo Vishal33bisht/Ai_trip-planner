@@ -30,8 +30,6 @@ def create_city(city: schemas.CityCreate, db: Session = Depends(get_db)):
 def create_itinerary(
     itinerary_in: schemas.ItineraryRequest, 
     db: Session = Depends(get_db),
-    # For now, we'll use a hardcoded user_id if you haven't built the 'get_current_user' dependency yet.
-    # If you have JWT auth ready, replace 1 with the actual user ID.
     user_id: int = 1 
 ):
     return crud.create_itinerary(db, itinerary_in, user_id)

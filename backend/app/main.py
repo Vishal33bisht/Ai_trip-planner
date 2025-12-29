@@ -5,7 +5,7 @@ from .database import Base, engine
 from .routers import itineraries as itineraries_router
 from .routers import users as users_router
 from app.routers import cities
-
+from .routers import nearby
 
 # create tables (simple approach; for production use Alembic)
 Base.metadata.create_all(bind=engine)
@@ -31,6 +31,8 @@ app.include_router(itineraries_router.router)
 app.include_router(users_router.router)
 
 app.include_router(cities.router)
+
+app.include_router(nearby.router)
 
 
 @app.get("/health")

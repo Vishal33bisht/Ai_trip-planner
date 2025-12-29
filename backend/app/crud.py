@@ -42,14 +42,7 @@ def create_city(db: Session, city: schemas.CityCreate) -> models.City:
 # -------- Itinerary --------
 def create_itinerary(db: Session, itinerary_in: schemas.ItineraryRequest, user_id: int):
     """Create a budget-aware itinerary using Gemini AI"""
-    
-    # 1. Find City
-    city = db.query(models.City).filter(models.City.name == itinerary_in.city).first()
-    if not city:
-        raise HTTPException(
-            status_code=404, 
-            detail=f"City '{itinerary_in.city}' not found."
-        )
+    city_name = itinerary_in.city.strip()
 
     # 2. Calculate Budget
     total_budget = itinerary_in.budget
@@ -76,7 +69,7 @@ def create_itinerary(db: Session, itinerary_in: schemas.ItineraryRequest, user_i
     
     if gemini_client:
         ai_data = call_gemini_ai(
-            city_name=city.name,
+            city_name=city_name,
             days=days,
             total_budget=total_budget,
             daily_budget=daily_budget,
@@ -92,7 +85,7 @@ def create_itinerary(db: Session, itinerary_in: schemas.ItineraryRequest, user_i
     if not ai_data:
         print("⚠️ Using enhanced fallback")
         ai_data = get_city_specific_fallback(
-            city_name=city.name,
+            city_name=city_name,
             days=days,
             daily_budget=daily_budget,
             daily_food=daily_food,
@@ -105,7 +98,7 @@ def create_itinerary(db: Session, itinerary_in: schemas.ItineraryRequest, user_i
     # 5. Save to Database
     db_itinerary = models.Itinerary(
         user_id=user_id,
-        city=city.name,
+        city=city_name,
         days=days,
         budget=total_budget,
         travel_style=itinerary_in.travelStyle,
