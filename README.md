@@ -51,8 +51,9 @@ It provides **day-by-day travel plans** with real places, realistic costs, and a
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/tripcraft-ai.git
-cd tripcraft-ai
+git clone https://github.com/Vishal33bisht/Ai_trip-planner.git
+cd Ai_trip-planner
+
 2️⃣ Backend Setup
 cd backend
 python -m venv venv
@@ -71,6 +72,9 @@ Create .env file inside backend/:
 DATABASE_URL=postgresql://username:password@localhost:5432/tripcraft_db
 SECRET_KEY=your-secret-jwt-key
 GEMINI_API_KEY=your-gemini-api-key
+
+Create PostgreSQL database:
+createdb tripcraft_db
 
 Run backend:
 uvicorn app.main:app --reload
@@ -138,35 +142,37 @@ allocations = {
     "transport": 0.15,
     "accommodation": 0.25
 }
+Budget Allocation:
 
+Food: 30%
+Activities: 30%
+Transport: 15%
+Accommodation: 25%
+
+The system ensures spending stays within ±10% of the target budget.
 
 🔒 Security
 ✅ Implemented
 
+Implemented
+Password hashing with bcrypt
 
-Password hashing (bcrypt)
+JWT authentication with secure tokens
 
+ORM-based SQL protection (SQLAlchemy)
 
-JWT authentication
+CORS properly configured
 
+Secure password validation
 
-ORM-based SQL protection
+⏳ Future Improvements
+HTTP-only secure cookies
 
-
-CORS enabled
-
-
-❌ To Improve
-
-
-HTTP-only cookies
-
-
-Rate limiting
-
+Rate limiting on endpoints
 
 CSRF protection
 
+API key rotation
 
 
 📄 License
