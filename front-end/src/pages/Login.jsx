@@ -1,55 +1,117 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import "./Auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
- const loginUser = async () => {
-  const res = await fetch("http://localhost:8000/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  const loginUser = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-  if (res.ok) {
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("userEmail", email); // Store user's email
+      const data = await res.json();
 
-    alert("Login successful!");
-    window.location.href = "/";
-  } else {
-    alert("Invalid credentials");
-  }
-};
-
+      if (res.ok) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("userEmail", email);
+        window.location.href = "/";
+      } else {
+        setError(data.detail || "Invalid email or password");
+      }
+    } catch (err) {
+      setError("Connection error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-50">
-      <div className="bg-white p-8 shadow rounded-xl w-96">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+    <div className="auth-container">
+      {/* Animated Background */}
+      <div className="auth-background"></div>
+      
+      {/* Floating Shapes */}
+      <div className="floating-shapes">
+        <div className="shape"></div>
+        <div className="shape"></div>
+        <div className="shape"></div>
+      </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 border rounded mb-3"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      {/* Auth Card */}
+      <div className="auth-card">
+        <div className="auth-brand">
+          <div className="auth-brand-icon">✈️</div>
+          <h1 className="auth-title">Welcome Back!</h1>
+          <p className="auth-subtitle">Login to plan your next adventure</p>
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 border rounded mb-3"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form className="auth-form" onSubmit={loginUser}>
+          {error && <div className="error-message">❌ {error}</div>}
 
-        <button
-          className="w-full bg-teal-600 text-white py-3 rounded-lg"
-          onClick={loginUser}
-        >
-          Login
-        </button>
+          <div className="form-group">
+            <label className="form-label">📧 Email Address</label>
+            <input
+              type="email"
+              className="form-input"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">🔒 Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-input"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </button>
+            </div>
+          </div>
+
+          <button className="auth-submit" type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner"></span> Logging in...
+              </>
+            ) : (
+              <>🚀 Login</>
+            )}
+          </button>
+        </form>
+
+        <div className="auth-divider">OR</div>
+
+        <div className="auth-footer">
+          Don't have an account?{" "}
+          <Link to="/signup" className="auth-link">
+            Sign Up
+          </Link>
+        </div>
       </div>
     </div>
   );

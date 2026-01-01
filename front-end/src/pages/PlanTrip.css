@@ -1,95 +1,301 @@
-.city-search-box {
-  position: relative;
-  width: 100%;
+/* ========== MODERN DESIGN WITH DARK MODE ========== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.city-search-box input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  outline: none;
+:root {
+  --primary: #0891b2;
+  --primary-dark: #0e7490;
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.18);
 }
 
-.city-dropdown {
-  position: absolute;
-  width: 100%;
-  max-height: 180px;
-  background: #fff;
-  border: 1px solid #999;
-  border-radius: 8px;
-  z-index: 1000;
-  overflow-y: auto;
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  transition: background 0.3s ease;
 }
 
-.city-dropdown li {
-  padding: 10px;
-  cursor: pointer;
-  font-size: 14px;
+body.dark-mode {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
-
-.city-dropdown li:hover {
-  background: #ececec;
-}
-
 
 .trip-container {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  align-items: center;
+  padding: 40px 20px;
+  position: relative;
 }
 
+/* ========== GLASSMORPHISM CARD ========== */
+.trip-card {
+  width: 100%;
+  max-width: 550px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.trip-container.dark .trip-card {
+  background: rgba(26, 26, 46, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+/* ========== DARK MODE TOGGLE ========== */
+.dark-mode-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--gradient);
+  border: none;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 10;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== TYPOGRAPHY ========== */
 .form-title {
   text-align: center;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+.form-subtitle {
+  text-align: center;
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.trip-container.dark .form-subtitle {
+  color: #94a3b8;
+}
+
+/* ========== FORM STYLING ========== */
 .trip-form {
-  width: 450px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.trip-container.dark .form-label {
+  color: #e5e7eb;
 }
 
 .trip-form input,
 .trip-form select {
-  padding: 12px;
+  width: 100%;
+  padding: 14px 16px;
   font-size: 15px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   outline: none;
+  box-sizing: border-box;
+  background: white;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.trip-container.dark .trip-form input,
+.trip-container.dark .trip-form select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
 }
 
 .trip-form input:focus,
 .trip-form select:focus {
-  border-color: teal;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
 }
 
+.trip-container.dark .trip-form input:focus,
+.trip-container.dark .trip-form select:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+/* ========== INTERESTS SECTION ========== */
 .interests-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border: 2px solid rgba(102, 126, 234, 0.1);
 }
 
+.trip-container.dark .interests-section {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.trip-container.dark .section-title {
+  color: #e5e7eb;
+}
+
+/* ========== CHECKBOX STYLING ========== */
 .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.checkbox-label:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(4px);
+}
+
+.trip-container.dark .checkbox-label:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #667eea;
+}
+
+/* ========== SUBMIT BUTTON ========== */
+.submit-btn {
+  margin-top: 10px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--gradient);
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========== LOADING SPINNER ========== */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== ERROR MESSAGES ========== */
+.error-message {
+  padding: 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  color: #dc2626;
+  font-weight: 600;
   font-size: 14px;
 }
 
-.submit-btn {
-  margin-top: 10px;
-  padding: 14px;
-  font-size: 18px;
-  background-color: teal;
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  border: none;
+.field-error {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
-.submit-btn:hover {
-  background-color: #009688;
+.info-text {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.trip-container.dark .info-text {
+  color: #94a3b8;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .trip-card {
+    padding: 30px 20px;
+  }
+  
+  .form-title {
+    font-size: 28px;
+  }
 }

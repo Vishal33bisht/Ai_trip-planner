@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api.js";
 import "../pages/PlanTrip.css";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ const PlanTrip = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false); // ✅ Dark mode state
 
   const [form, setForm] = useState({
     city: "",
@@ -19,32 +20,44 @@ const PlanTrip = () => {
     interests: [],
   });
 
+  // ✅ Load dark mode preference from localStorage
+  useEffect(() => {
+    const savedMode = localStorage.getItem("darkMode");
+    if (savedMode === "true") {
+      setDarkMode(true);
+      document.body.classList.add("dark-mode");
+    }
+  }, []);
+
+  // ✅ Toggle dark mode
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", !darkMode);
+  };
+
   // ✅ VALIDATION FUNCTION
   const validateForm = () => {
     const newErrors = {};
 
-    // ✅ City Validation - Remove whitespace and check if empty
     if (!form.city.trim()) {
       newErrors.city = "City name is required";
     } else if (form.city.trim().length < 2) {
       newErrors.city = "City name must be at least 2 characters";
     }
 
-    // ✅ Days Validation
     if (!form.days || form.days < 1) {
       newErrors.days = "Trip must be at least 1 day";
     } else if (form.days > 90) {
       newErrors.days = "Trip cannot exceed 90 days";
     }
 
-    // ✅ Budget Validation
     if (!form.budget || form.budget < 500) {
       newErrors.budget = "Budget must be at least ₹500";
     } else if (form.budget > 10000000) {
       newErrors.budget = "Budget cannot exceed ₹1 crore";
     }
 
-    // ✅ Interests Validation
     if (form.interests.length > 10) {
       newErrors.interests = "Select maximum 10 interests";
     }
@@ -64,224 +77,236 @@ const PlanTrip = () => {
     setErrors({ ...errors, interests: "" });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // ✅ VALIDATE BEFORE SUBMITTING
-  if (!validateForm()) {
-    return;
-  }
-
-  setLoading(true);
-  setErrors({});
-
-  try {
-    // ✅ Clean city name before sending
-    const cleanedForm = {
-      ...form,
-      city: form.city.trim(),
-    };
-
-    // ✅ CORRECT: Use /itineraries (not /api/itineraries)
-    const response = await api.post("/itineraries", cleanedForm);
-    
-    console.log("Success:", response.data);
-    alert(`Itinerary for ${cleanedForm.city} generated successfully!`);
-    navigate(`/trip/${response.data.id}`);
-  } catch (error) {
-    console.error("Error creating itinerary:", error);
-
-    if (error.response?.data?.detail) {
-      if (typeof error.response.data.detail === "string") {
-        setErrors({ general: error.response.data.detail });
-      } else {
-        const backendErrors = {};
-        error.response.data.detail.forEach((err) => {
-          backendErrors[err.loc[1]] = err.msg;
-        });
-        setErrors(backendErrors);
-      }
-    } else {
-      setErrors({
-        general: "Failed to create itinerary. Please make sure you are logged in.",
-      });
+    if (!validateForm()) {
+      return;
     }
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const cleanedForm = {
+        ...form,
+        city: form.city.trim(),
+      };
+
+      const response = await api.post("/itineraries", cleanedForm);
+      
+      console.log("Success:", response.data);
+      alert(`Itinerary for ${cleanedForm.city} generated successfully!`);
+      navigate(`/trip/${response.data.id}`);
+    } catch (error) {
+      console.error("Error creating itinerary:", error);
+
+      if (error.response?.data?.detail) {
+        if (typeof error.response.data.detail === "string") {
+          setErrors({ general: error.response.data.detail });
+        } else {
+          const backendErrors = {};
+          error.response.data.detail.forEach((err) => {
+            backendErrors[err.loc[1]] = err.msg;
+          });
+          setErrors(backendErrors);
+        }
+      } else {
+        setErrors({
+          general: "Failed to create itinerary. Please make sure you are logged in.",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="trip-container">
-      <h2 className="form-title">Plan Your Trip</h2>
-
-      <form className="trip-form" onSubmit={handleSubmit}>
-        {/* ✅ SHOW GENERAL ERRORS */}
-        {errors.general && (
-          <div className="error-message" style={{ 
-            padding: "10px", 
-            background: "#fee", 
-            border: "1px solid #fcc", 
-            borderRadius: "5px",
-            marginBottom: "15px",
-            color: "#c33"
-          }}>
-            {errors.general}
-          </div>
-        )}
-
-        {/* ✅ SIMPLE CITY INPUT - NO AUTOCOMPLETE */}
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Enter City Name (e.g., Delhi, Mumbai, Jaipur)"
-            value={form.city}
-            onChange={(e) => {
-              setForm({ ...form, city: e.target.value });
-              setErrors({ ...errors, city: "" });
-            }}
-            className={errors.city ? "input-error" : ""}
-            required
-          />
-          {errors.city && (
-            <span className="field-error" style={{ color: "red", fontSize: "12px" }}>
-              {errors.city}
-            </span>
-          )}
-          <p className="info-text" style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
-            💡 Tip: Enter any Indian city name (works for 40+ major cities)
-          </p>
-        </div>
-
-        {/* Days Input */}
-        <div className="form-group">
-          <input
-            type="number"
-            placeholder="No. of Days (1-90)"
-            value={form.days}
-            onChange={(e) => {
-              setForm({ ...form, days: parseInt(e.target.value) || "" });
-              setErrors({ ...errors, days: "" });
-            }}
-            min="1"
-            max="90"
-            className={errors.days ? "input-error" : ""}
-            required
-          />
-          {errors.days && (
-            <span className="field-error" style={{ color: "red", fontSize: "12px" }}>
-              {errors.days}
-            </span>
-          )}
-        </div>
-
-        {/* Budget Input */}
-        <div className="form-group">
-          <input
-            type="number"
-            placeholder="Budget (₹)"
-            value={form.budget}
-            onChange={(e) => {
-              setForm({ ...form, budget: parseInt(e.target.value) || "" });
-              setErrors({ ...errors, budget: "" });
-            }}
-            min="500"
-            className={errors.budget ? "input-error" : ""}
-            required
-          />
-          {errors.budget && (
-            <span className="field-error" style={{ color: "red", fontSize: "12px" }}>
-              {errors.budget}
-            </span>
-          )}
-        </div>
-
-        {/* Travel Style */}
-        <select
-          value={form.travelStyle}
-          onChange={(e) => setForm({ ...form, travelStyle: e.target.value })}
-        >
-          <option value="budget">Budget Travel</option>
-          <option value="mid-range">Mid-Range</option>
-          <option value="luxury">Luxury</option>
-        </select>
-
-        {/* Accommodation */}
-        <select
-          value={form.accommodation}
-          onChange={(e) => setForm({ ...form, accommodation: e.target.value })}
-        >
-          <option value="">Accommodation Preference</option>
-          <option value="budget">Budget Hotel (₹1k–₹3k/night)</option>
-          <option value="mid-range">Mid-Range (₹3k–₹7k/night)</option>
-          <option value="luxury">Luxury (₹7k+)</option>
-          <option value="hostel">Hostel</option>
-          <option value="airbnb">Airbnb / Homestay</option>
-        </select>
-
-        {/* Travel Pace */}
-        <select
-          value={form.pace}
-          onChange={(e) => setForm({ ...form, pace: e.target.value })}
-        >
-          <option value="">Travel Pace</option>
-          <option value="slow">Slow & Relaxing 😌</option>
-          <option value="moderate">Standard (Balanced) 🙂</option>
-          <option value="fast">Fast & Packed 😎</option>
-        </select>
-
-        {/* Transport Mode */}
-        <select
-          value={form.transportMode}
-          onChange={(e) => setForm({ ...form, transportMode: e.target.value })}
-        >
-          <option value="">Transport Mode</option>
-          <option value="walking">Walking</option>
-          <option value="public">Public Transport</option>
-          <option value="taxi">Taxi / Ride-hailing</option>
-          <option value="rental">Rental Car / Scooter</option>
-        </select>
-
-        {/* Trip Interests */}
-        <div className="interests-section">
-          <label>Trip Interests (Optional):</label>
-          {[
-            "Historical Sites",
-            "Beaches",
-            "Museums",
-            "Nightlife",
-            "Nature & Hiking",
-            "Amusement Parks",
-          ].map((interest) => (
-            <label key={interest} className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={form.interests.includes(interest)}
-                onChange={() => handleCheckboxChange(interest)}
-                disabled={
-                  form.interests.length >= 10 &&
-                  !form.interests.includes(interest)
-                }
-              />
-              {interest}
-            </label>
-          ))}
-          {errors.interests && (
-            <span className="field-error" style={{ color: "red", fontSize: "12px" }}>
-              {errors.interests}
-            </span>
-          )}
-          <p className="info-text" style={{ fontSize: "12px", color: "#666" }}>
-            {form.interests.length}/10 interests selected
-          </p>
-        </div>
-
-        {/* Submit Button */}
-        <button className="submit-btn" type="submit" disabled={loading}>
-          {loading ? "🔄 Generating Itinerary..." : "✈️ Generate AI Itinerary"}
+    <div className={`trip-container ${darkMode ? "dark" : ""}`}>
+      <div className="trip-card">
+        {/* ✅ Dark Mode Toggle */}
+        <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+          {darkMode ? "☀️" : "🌙"}
         </button>
-      </form>
+
+        <h2 className="form-title">
+          ✈️ Plan Your Dream Trip
+        </h2>
+        <p className="form-subtitle">Let AI craft the perfect itinerary for you</p>
+
+        <form className="trip-form" onSubmit={handleSubmit}>
+          {/* ✅ SHOW GENERAL ERRORS */}
+          {errors.general && (
+            <div className="error-message">
+              {errors.general}
+            </div>
+          )}
+
+          {/* City Input */}
+          <div className="form-group">
+            <label className="form-label">📍 Destination</label>
+            <input
+              type="text"
+              placeholder="Enter City Name (e.g., Delhi, Mumbai, Jaipur)"
+              value={form.city}
+              onChange={(e) => {
+                setForm({ ...form, city: e.target.value });
+                setErrors({ ...errors, city: "" });
+              }}
+              className={errors.city ? "input-error" : ""}
+              required
+            />
+            {errors.city && (
+              <span className="field-error">{errors.city}</span>
+            )}
+            <p className="info-text">
+              💡 Works for 40+ major Indian cities
+            </p>
+          </div>
+
+          {/* Days Input */}
+          <div className="form-group">
+            <label className="form-label">📅 Duration</label>
+            <input
+              type="number"
+              placeholder="No. of Days (1-90)"
+              value={form.days}
+              onChange={(e) => {
+                setForm({ ...form, days: parseInt(e.target.value) || "" });
+                setErrors({ ...errors, days: "" });
+              }}
+              min="1"
+              max="90"
+              className={errors.days ? "input-error" : ""}
+              required
+            />
+            {errors.days && (
+              <span className="field-error">{errors.days}</span>
+            )}
+          </div>
+
+          {/* Budget Input */}
+          <div className="form-group">
+            <label className="form-label">💰 Budget</label>
+            <input
+              type="number"
+              placeholder="Budget (₹)"
+              value={form.budget}
+              onChange={(e) => {
+                setForm({ ...form, budget: parseInt(e.target.value) || "" });
+                setErrors({ ...errors, budget: "" });
+              }}
+              min="500"
+              className={errors.budget ? "input-error" : ""}
+              required
+            />
+            {errors.budget && (
+              <span className="field-error">{errors.budget}</span>
+            )}
+          </div>
+
+          {/* Travel Style */}
+          <div className="form-group">
+            <label className="form-label">🎒 Travel Style</label>
+            <select
+              value={form.travelStyle}
+              onChange={(e) => setForm({ ...form, travelStyle: e.target.value })}
+            >
+              <option value="budget">Budget Travel</option>
+              <option value="mid-range">Mid-Range</option>
+              <option value="luxury">Luxury</option>
+            </select>
+          </div>
+
+          {/* Accommodation */}
+          <div className="form-group">
+            <label className="form-label">🏨 Accommodation</label>
+            <select
+              value={form.accommodation}
+              onChange={(e) => setForm({ ...form, accommodation: e.target.value })}
+            >
+              <option value="">Select Preference</option>
+              <option value="budget">Budget Hotel (₹1k–₹3k/night)</option>
+              <option value="mid-range">Mid-Range (₹3k–₹7k/night)</option>
+              <option value="luxury">Luxury (₹7k+)</option>
+              <option value="hostel">Hostel</option>
+              <option value="airbnb">Airbnb / Homestay</option>
+            </select>
+          </div>
+
+          {/* Travel Pace */}
+          <div className="form-group">
+            <label className="form-label">⚡ Travel Pace</label>
+            <select
+              value={form.pace}
+              onChange={(e) => setForm({ ...form, pace: e.target.value })}
+            >
+              <option value="">Select Pace</option>
+              <option value="slow">Slow & Relaxing 😌</option>
+              <option value="moderate">Standard (Balanced) 🙂</option>
+              <option value="fast">Fast & Packed 😎</option>
+            </select>
+          </div>
+
+          {/* Transport Mode */}
+          <div className="form-group">
+            <label className="form-label">🚗 Transport Mode</label>
+            <select
+              value={form.transportMode}
+              onChange={(e) => setForm({ ...form, transportMode: e.target.value })}
+            >
+              <option value="">Select Transport</option>
+              <option value="walking">Walking</option>
+              <option value="public">Public Transport</option>
+              <option value="taxi">Taxi / Ride-hailing</option>
+              <option value="rental">Rental Car / Scooter</option>
+            </select>
+          </div>
+
+          {/* Trip Interests */}
+          <div className="interests-section">
+            <label className="section-title">🎯 Trip Interests (Optional)</label>
+            {[
+              { emoji: "🏛️", name: "Historical Sites" },
+              { emoji: "🏖️", name: "Beaches" },
+              { emoji: "🏛️", name: "Museums" },
+              { emoji: "🎉", name: "Nightlife" },
+              { emoji: "🌲", name: "Nature & Hiking" },
+              { emoji: "🎢", name: "Amusement Parks" },
+            ].map((interest) => (
+              <label key={interest.name} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={form.interests.includes(interest.name)}
+                  onChange={() => handleCheckboxChange(interest.name)}
+                  disabled={
+                    form.interests.length >= 10 &&
+                    !form.interests.includes(interest.name)
+                  }
+                />
+                <span>{interest.emoji} {interest.name}</span>
+              </label>
+            ))}
+            {errors.interests && (
+              <span className="field-error">{errors.interests}</span>
+            )}
+            <p className="info-text">
+              {form.interests.length}/10 interests selected
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <button className="submit-btn" type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner"></span> Generating Magic...
+              </>
+            ) : (
+              <>✨ Generate AI Itinerary</>
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

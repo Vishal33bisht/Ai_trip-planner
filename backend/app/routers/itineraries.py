@@ -30,19 +30,20 @@ def create_city(city: schemas.CityCreate, db: Session = Depends(get_db)):
 def create_itinerary(
     itinerary_in: schemas.ItineraryRequest, 
     db: Session = Depends(get_db),
-    user_id: int = 1 
+    current_user: models.User = Depends(get_current_user) 
 ):
     return crud.create_itinerary(db, itinerary_in, user_id)
 
 @router.get("/{itinerary_id}", response_model=schemas.ItineraryOut)
-def get_itinerary(itinerary_id: int, db: Session = Depends(get_db)):
+def get_itinerary(itinerary_id: int, db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
     db_itinerary = crud.get_itinerary(db, itinerary_id)
     if not db_itinerary:
         raise HTTPException(status_code=404, detail="Itinerary not found")
+    if db_itinerary.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
     return db_itinerary
 
-# 3. LIST Itineraries (Optional, useful for history)
 @router.get("/", response_model=List[schemas.ItineraryOut])
-def list_itineraries(db: Session = Depends(get_db)):
-    # You can expand this to filter by user_id later
-    return crud.list_itineraries(db)
+def list_itineraries(db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
+    return crud.list_itineraries(db,user_id=current_user.id)
