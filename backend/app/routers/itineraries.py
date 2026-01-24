@@ -32,7 +32,7 @@ def create_itinerary(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user) 
 ):
-    return crud.create_itinerary(db, itinerary_in, user_id)
+    return crud.create_itinerary(db, itinerary_in,current_user.id)
 
 @router.get("/{itinerary_id}", response_model=schemas.ItineraryOut)
 def get_itinerary(itinerary_id: int, db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
