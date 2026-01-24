@@ -13,10 +13,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="TripCraft AI Backend")
 
 # adjust this origin to your Vite dev URL
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+origins =["*"]
 
 app.add_middleware(
     CORSMiddleware,
