@@ -36,7 +36,7 @@ const Signup = () => {
         setError(data.detail || "Signup failed. Email may already exist.");
       }
     } catch (err) {
-      setError("website is under the maintenance ");
+      setError("Rohit beta masti nhiiiii");
     } finally {
       setLoading(false);
     }
