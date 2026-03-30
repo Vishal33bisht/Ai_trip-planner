@@ -32,11 +32,11 @@ const Signup = () => {
       if (res.ok) {
         alert("✅ Account created successfully! Please login.");
         window.location.href = "/login";
-      } else {
+      }else {
         setError(data.detail || "Signup failed. Email may already exist.");
       }
     } catch (err) {
-      setError("apkiii g me dandaaa");
+      setError("website is under maintenance ");
     } finally {
       setLoading(false);
     }
