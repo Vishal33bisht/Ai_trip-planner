@@ -7,20 +7,18 @@ from .routers import users as users_router
 from app.routers import cities
 from .routers import nearby
 
-# create tables (simple approach; for production use Alembic)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TripCraft AI Backend")
 
-# adjust this origin to your Vite dev URL
-origins =["*"]
+origins =["https://ai-trip-planner-seven-inky.vercel.app"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=True,
 )
 
 app.include_router(itineraries_router.router)

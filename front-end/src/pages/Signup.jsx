@@ -36,7 +36,8 @@ const Signup = () => {
         setError(data.detail || "Signup failed. Email may already exist.");
       }
     } catch (err) {
-      setError("sorry for the trouble");
+      console,log(err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
