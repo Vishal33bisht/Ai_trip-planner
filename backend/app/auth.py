@@ -10,23 +10,24 @@ import os
 from .database import get_db
 from . import models
 
-# Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Bearer token security
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+
+
 security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
+    password = password[:72]
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    plain_password = plain_password[:72]
     return pwd_context.verify(plain_password, hashed_password)
 
 
