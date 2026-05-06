@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 from .database import Base, engine
 from .routers import itineraries as itineraries_router
@@ -11,7 +12,17 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TripCraft AI Backend")
 
-origins =["https://ai-trip-planner-seven-inky.vercel.app"]
+default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://ai-trip-planner-seven-inky.vercel.app",
+]
+
+origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", ",".join(default_origins)).split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,

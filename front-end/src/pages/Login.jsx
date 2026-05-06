@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../services/api";
 import "./Auth.css";
 
 const Login = () => {
@@ -14,25 +15,17 @@ const Login = () => {
     setLoading(true);
     setError("");
 
-    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const data = await apiFetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("userEmail", email);
-        window.location.href = "/";
-      } else {
-        setError(data.detail || "Invalid email or password");
-      }
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("userEmail", email);
+      window.location.href = "/";
     } catch (err) {
-      setError("Connection error. Please try again.");
+      setError(err.message || "Connection error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -40,29 +33,26 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      {/* Animated Background */}
       <div className="auth-background"></div>
-      
-      {/* Floating Shapes */}
+
       <div className="floating-shapes">
         <div className="shape"></div>
         <div className="shape"></div>
         <div className="shape"></div>
       </div>
 
-      {/* Auth Card */}
       <div className="auth-card">
         <div className="auth-brand">
-          <div className="auth-brand-icon">✈️</div>
+          <div className="auth-brand-icon">TC</div>
           <h1 className="auth-title">Welcome Back!</h1>
           <p className="auth-subtitle">Login to plan your next adventure</p>
         </div>
 
         <form className="auth-form" onSubmit={loginUser}>
-          {error && <div className="error-message">❌ {error}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label className="form-label">📧 Email Address</label>
+            <label className="form-label">Email Address</label>
             <input
               type="email"
               className="form-input"
@@ -74,7 +64,7 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">🔒 Password</label>
+            <label className="form-label">Password</label>
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -89,7 +79,7 @@ const Login = () => {
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "👁️" : "👁️‍🗨️"}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
@@ -100,7 +90,7 @@ const Login = () => {
                 <span className="spinner"></span> Logging in...
               </>
             ) : (
-              <>🚀 Login</>
+              <>Login</>
             )}
           </button>
         </form>

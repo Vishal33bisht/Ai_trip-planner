@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../services/api";
 import "./Auth.css";
 
 const Signup = () => {
@@ -13,31 +14,23 @@ const Signup = () => {
     setLoading(true);
     setError("");
 
-    // Client-side validation
     if (form.password.length < 6) {
       setError("Password must be at least 6 characters");
       setLoading(false);
       return;
     }
-    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
     try {
-      const res = await fetch(`${API_URL}/api/auth/signup`, {
+      await apiFetch("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("✅ Account created successfully! Please login.");
-        window.location.href = "/login";
-      }else {
-        setError(data.detail || "Signup failed. Email may already exist.");
-      }
+      alert("Account created successfully! Please login.");
+      window.location.href = "/login";
     } catch (err) {
       console.log(err);
-      setError(err.message);
+      setError(err.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,29 +38,26 @@ const Signup = () => {
 
   return (
     <div className="auth-container">
-      {/* Animated Background */}
       <div className="auth-background"></div>
-      
-      {/* Floating Shapes */}
+
       <div className="floating-shapes">
         <div className="shape"></div>
         <div className="shape"></div>
         <div className="shape"></div>
       </div>
 
-      {/* Auth Card */}
       <div className="auth-card">
         <div className="auth-brand">
-          <div className="auth-brand-icon">🌍</div>
+          <div className="auth-brand-icon">TC</div>
           <h1 className="auth-title">Create Account</h1>
           <p className="auth-subtitle">Start your journey with TripCraft AI</p>
         </div>
 
         <form className="auth-form" onSubmit={registerUser}>
-          {error && <div className="error-message">❌ {error}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label className="form-label">👤 Full Name</label>
+            <label className="form-label">Full Name</label>
             <input
               type="text"
               className="form-input"
@@ -79,7 +69,7 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">📧 Email Address</label>
+            <label className="form-label">Email Address</label>
             <input
               type="email"
               className="form-input"
@@ -91,7 +81,7 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">🔒 Password</label>
+            <label className="form-label">Password</label>
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -107,7 +97,7 @@ const Signup = () => {
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "👁️" : "👁️‍🗨️"}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
@@ -118,7 +108,7 @@ const Signup = () => {
                 <span className="spinner"></span> Creating Account...
               </>
             ) : (
-              <>✨ Sign Up</>
+              <>Sign Up</>
             )}
           </button>
         </form>
