@@ -87,8 +87,6 @@ def get_current_user(
     
     return user
 
-
-# Optional: Get current user or None (for optional auth)
 def get_current_user_optional(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)),
     db: Session = Depends(get_db)
