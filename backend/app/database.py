@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
@@ -13,7 +14,22 @@ if not DATABASE_URL:
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(DATABASE_URL, echo=False)
+engine_options = {
+    "echo": False,
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
+
+database_url = make_url(DATABASE_URL)
+if database_url.drivername.startswith("postgresql"):
+    host = database_url.host or ""
+    is_remote_postgres = host not in {"localhost", "127.0.0.1", ""}
+    has_sslmode = "sslmode" in database_url.query
+
+    if is_remote_postgres and not has_sslmode:
+        engine_options["connect_args"] = {"sslmode": "require"}
+
+engine = create_engine(DATABASE_URL, **engine_options)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
