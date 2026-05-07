@@ -2,15 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-from .database import Base, engine
+from .database import init_db
 from .routers import itineraries as itineraries_router
 from .routers import users as users_router
 from app.routers import cities
 from .routers import nearby
 
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title="TripCraft AI Backend")
+
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 default_origins = [
     "http://localhost:5173",
