@@ -172,9 +172,26 @@ const PlanTrip = () => {
               placeholder="No. of Days (1-90)"
               value={form.days}
               onChange={(e) => {
-                setForm({ ...form, days: parseInt(e.target.value) || "" });
+                const raw = e.target.value;
+                if (raw === "") {
+                  setForm({ ...form, days: "" });
+                  setErrors({ ...errors, days: "" });
+                  return;
+                }
+                const val = parseInt(raw, 10);
+                if (isNaN(val)) {
+                  setForm({ ...form, days: "" });
+                  return;
+                }
+                if (val < 1) {
+                  setForm({ ...form, days: "" });
+                  setErrors({ ...errors, days: "Trip must be at least 1 day" });
+                  return;
+                }
+                setForm({ ...form, days: val });
                 setErrors({ ...errors, days: "" });
               }}
+              onKeyDown={(e) => { if (e.key === "-") e.preventDefault(); }}
               min="1"
               max="90"
               className={errors.days ? "input-error" : ""}
@@ -193,9 +210,26 @@ const PlanTrip = () => {
               placeholder="Budget (₹)"
               value={form.budget}
               onChange={(e) => {
-                setForm({ ...form, budget: parseInt(e.target.value) || "" });
+                const raw = e.target.value;
+                if (raw === "") {
+                  setForm({ ...form, budget: "" });
+                  setErrors({ ...errors, budget: "" });
+                  return;
+                }
+                const val = parseInt(raw, 10);
+                if (isNaN(val)) {
+                  setForm({ ...form, budget: "" });
+                  return;
+                }
+                if (val < 500) {
+                  setForm({ ...form, budget: "" });
+                  setErrors({ ...errors, budget: "Budget must be at least ₹500" });
+                  return;
+                }
+                setForm({ ...form, budget: val });
                 setErrors({ ...errors, budget: "" });
               }}
+              onKeyDown={(e) => { if (e.key === "-") e.preventDefault(); }}
               min="500"
               className={errors.budget ? "input-error" : ""}
               required
