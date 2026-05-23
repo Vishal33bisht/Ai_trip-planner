@@ -17,7 +17,8 @@ export function ensureApiUrl() {
 
 export async function apiFetch(path, options = {}) {
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+  // Increase fetch timeout to 120s to accommodate longer backend processing
+  const timeoutId = window.setTimeout(() => controller.abort(), 120000);
 
   try {
     const response = await fetch(`${ensureApiUrl()}${path}`, {
@@ -43,7 +44,7 @@ export async function apiFetch(path, options = {}) {
     return data;
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error("Request timed out. Please check that the backend is running.");
+      throw new Error("Request timed out after 120s. Check backend availability or long-running AI calls.");
     }
 
     throw error;
@@ -57,7 +58,8 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 20000,
+  // Increase axios timeout to 120s to allow longer processing on backend
+  timeout: 120000,
 });
 
 // Add request interceptor to include auth token
