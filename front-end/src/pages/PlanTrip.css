@@ -146,6 +146,19 @@ body.dark-mode {
   color: #e5e7eb;
 }
 
+/* Ensure native select dropdown options are readable in dark mode */
+.trip-container.dark .trip-form select option,
+.trip-container.dark .trip-form select optgroup {
+  background: rgba(26, 26, 46, 0.95);
+  color: #e5e7eb;
+}
+
+/* Webkit-specific dropdown styling for better contrast */
+.trip-container.dark .trip-form select::-webkit-menu-list-button {
+  background: rgba(26, 26, 46, 0.95);
+  color: #e5e7eb;
+}
+
 .trip-form input:focus,
 .trip-form select:focus {
   border-color: #667eea;

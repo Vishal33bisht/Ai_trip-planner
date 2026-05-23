@@ -291,7 +291,7 @@ const PlanTrip = () => {
               <span className="field-error">{errors.interests}</span>
             )}
             <p className="info-text">
-              {form.interests.length}/10 interests selected
+              {form.interests.length}/6 interests selected
             </p>
           </div>
 
