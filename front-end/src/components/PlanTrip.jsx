@@ -91,6 +91,8 @@ const PlanTrip = () => {
       const cleanedForm = {
         ...form,
         city: form.city.trim(),
+        days: form.days === "" ? null : Number(form.days),
+        budget: form.budget === "" ? null : Number(form.budget),
       };
 
       const response = await api.post("/itineraries", cleanedForm);
@@ -210,24 +212,18 @@ const PlanTrip = () => {
               placeholder="Budget (₹)"
               value={form.budget}
               onChange={(e) => {
-                const raw = e.target.value;
+                // allow only digits while typing, don't clear the input so users can type multi-digit numbers
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                setForm({ ...form, budget: raw });
                 if (raw === "") {
-                  setForm({ ...form, budget: "" });
                   setErrors({ ...errors, budget: "" });
-                  return;
-                }
-                const val = parseInt(raw, 10);
-                if (isNaN(val)) {
-                  setForm({ ...form, budget: "" });
-                  return;
-                }
-                if (val < 500) {
-                  setForm({ ...form, budget: "" });
+                } else if (Number(raw) < 500) {
                   setErrors({ ...errors, budget: "Budget must be at least ₹500" });
-                  return;
+                } else if (Number(raw) > 10000000) {
+                  setErrors({ ...errors, budget: "Budget cannot exceed ₹1 crore" });
+                } else {
+                  setErrors({ ...errors, budget: "" });
                 }
-                setForm({ ...form, budget: val });
-                setErrors({ ...errors, budget: "" });
               }}
               onKeyDown={(e) => { if (e.key === "-") e.preventDefault(); }}
               min="500"
