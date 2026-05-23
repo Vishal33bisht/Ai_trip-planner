@@ -80,6 +80,13 @@ const PlanTrip = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Quick client-side auth check
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setErrors({ general: "You are not logged in. Please log in to continue." });
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -101,22 +108,30 @@ const PlanTrip = () => {
       alert(`Itinerary for ${cleanedForm.city} generated successfully!`);
       navigate(`/trip/${response.data.id}`);
     } catch (error) {
-      console.error("Error creating itinerary:", error);
+      console.error("Error creating itinerary:", error, error.response || null);
 
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === "string") {
-          setErrors({ general: error.response.data.detail });
+      // If backend returned a 401, prompt user to log in
+      if (error.response) {
+        if (error.response.status === 401) {
+          setErrors({ general: "Authentication required — please log in." });
+        } else if (error.response.data?.detail) {
+          if (typeof error.response.data.detail === "string") {
+            setErrors({ general: error.response.data.detail });
+          } else if (Array.isArray(error.response.data.detail)) {
+            const backendErrors = {};
+            error.response.data.detail.forEach((err) => {
+              backendErrors[err.loc[1]] = err.msg;
+            });
+            setErrors(backendErrors);
+          } else {
+            setErrors({ general: JSON.stringify(error.response.data) });
+          }
         } else {
-          const backendErrors = {};
-          error.response.data.detail.forEach((err) => {
-            backendErrors[err.loc[1]] = err.msg;
-          });
-          setErrors(backendErrors);
+          setErrors({ general: error.message || "Request failed" });
         }
       } else {
-        setErrors({
-          general: "Failed to create itinerary. Please make sure you are logged in.",
-        });
+        // Network or CORS error
+        setErrors({ general: error.message || "Network error. Check backend/CORS." });
       }
     } finally {
       setLoading(false);
