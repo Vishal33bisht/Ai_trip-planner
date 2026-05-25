@@ -44,6 +44,11 @@ app.include_router(cities.router)
 app.include_router(nearby.router)
 
 
+@app.get("/")
+async def root():
+    return {"message": "API is running"}
+
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
