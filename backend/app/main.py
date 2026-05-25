@@ -52,3 +52,8 @@ async def root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.head("/health")
+def health_head():
+    return None
