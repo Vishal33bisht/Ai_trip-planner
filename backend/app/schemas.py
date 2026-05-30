@@ -4,6 +4,12 @@ from pydantic import BaseModel, EmailStr
 # ---------- City ----------
 class CityBase(BaseModel):
     name: str
+    @field_validator('name')
+    @classmethod
+    def validate_city(cls,v):
+        if v.isdigit():
+            raise ValueError("City name cannot be a number")
+        return v
     country: Optional[str] = None
 
 class CityResponse(CityBase):
