@@ -2,15 +2,25 @@ from typing import List, Optional,Any
 from pydantic import BaseModel, EmailStr
 from pydantic import field_validator
 
+
+def validate_city_name(value: str) -> str:
+    city = value.strip()
+    if not city:
+        raise ValueError("City name is required")
+    if any(char.isdigit() for char in city):
+        raise ValueError("City name cannot contain numbers")
+    if len(city) < 2:
+        raise ValueError("City name must be at least 2 characters")
+    return city
+
+
 # ---------- City ----------
 class CityBase(BaseModel):
     name: str
     @field_validator('name')
     @classmethod
     def validate_city(cls,v):
-        if v.isdigit():
-            raise ValueError("City name cannot be a number")
-        return v
+        return validate_city_name(v)
     country: Optional[str] = None
 
 class CityResponse(CityBase):
@@ -84,6 +94,11 @@ class ItineraryRequest(BaseModel):
     pace: Optional[str] = "moderate"
     transportMode: Optional[str] = "public transport"
     interests: Optional[List[str]] = []
+
+    @field_validator('city')
+    @classmethod
+    def validate_city(cls, v):
+        return validate_city_name(v)
 
 
 # ---------- Itinerary Response (Full details) ----------

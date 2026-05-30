@@ -39,10 +39,13 @@ const PlanTrip = () => {
   // ✅ VALIDATION FUNCTION
   const validateForm = () => {
     const newErrors = {};
+    const city = form.city.trim();
 
-    if (!form.city.trim()) {
+    if (!city) {
       newErrors.city = "City name is required";
-    } else if (form.city.trim().length < 2) {
+    } else if (/\d/.test(city)) {
+      newErrors.city = "City name cannot contain numbers";
+    } else if (city.length < 2) {
       newErrors.city = "City name must be at least 2 characters";
     }
 
@@ -167,7 +170,8 @@ const PlanTrip = () => {
               placeholder="Enter City Name (e.g., Delhi, Mumbai, Jaipur)"
               value={form.city}
               onChange={(e) => {
-                setForm({ ...form, city: e.target.value });
+                const city = e.target.value.replace(/[0-9]/g, "");
+                setForm({ ...form, city });
                 setErrors({ ...errors, city: "" });
               }}
               className={errors.city ? "input-error" : ""}
