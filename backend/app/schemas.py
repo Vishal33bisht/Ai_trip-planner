@@ -1,5 +1,6 @@
 from typing import List, Optional,Any
 from pydantic import BaseModel, EmailStr
+from pydantic import field_validator
 
 # ---------- City ----------
 class CityBase(BaseModel):
