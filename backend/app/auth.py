@@ -52,7 +52,6 @@ def decode_access_token(token: str) -> Optional[dict]:
     except JWTError:
         return None
 
-
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
