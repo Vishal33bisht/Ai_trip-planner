@@ -185,3 +185,31 @@ Happy Traveling ✈️🌍
 ---
 
 
+
+## 🐳 DevOps & Deployment Architecture
+
+### 1. Docker & Container Orchestration
+The project is containerized using optimized, multi-stage Docker builds:
+- **`backend/Dockerfile`**: Two-stage Python 3.12 slim build with dependency compilation, non-root user execution (`appuser`), and health checks (`GET /health`).
+- **`front-end/Dockerfile`**: Two-stage build compiling Vite React SPA assets into a minimal `nginx:alpine` runner with custom caching and SPA routing.
+- **`docker-compose.yml`**: Full-stack multi-container composition connecting PostgreSQL 16, FastAPI backend, and NGINX frontend with dependent health checks (`service_healthy`) and isolated bridge networking.
+
+```bash
+# Run full stack with Docker Compose
+docker compose up --build
+
+# Run database only for local dev
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### 2. CI/CD Automation (GitHub Actions)
+- **CI Pipeline (`.github/workflows/ci.yml`)**: Automatically triggers on PRs and commits to `main`. Executes Python 3.12 syntax verification, PostgreSQL service container schema migrations/initialization, frontend ESLint and Vite build checks, and Docker Buildx build testing.
+- **CD Pipeline (`.github/workflows/cd.yml`)**: Builds and pushes multi-platform images to GitHub Container Registry (GHCR) tagged with commit SHAs and semver tags, followed by vulnerability scanning via Aqua Security Trivy.
+
+### 3. Kubernetes Deployment (`k8s/`)
+Declarative Kubernetes infrastructure manifests:
+- `postgres.yaml`: PersistentVolumeClaim (PVC) and PostgreSQL Deployment.
+- `backend.yaml`: Scalable FastAPI Deployment with liveness/readiness probes, resource limits/requests, and ClusterIP Service.
+- `frontend.yaml`: Scalable NGINX frontend Deployment with health probes.
+- `ingress.yaml`: NGINX Ingress Controller routing traffic across frontend and API paths (`/`, `/api`, `/health`).
+- `kustomization.yaml`: Kustomize configuration for environment overlays.

@@ -2,15 +2,25 @@
 node_modules/
 front-end/node_modules/
 dist/
+front-end/dist/
 .env
+.env.local
 
 # Ignore Backend dependencies
 __pycache__/
+**/__pycache__/
 *.py[cod]
+*$py.class
 venv/
 .venv/
 env/
 backend/venv/
+backend/**/__pycache__/
+
+# Docker & logs
+*.log
+.docker/
 
 # Ignore OS files
 .DS_Store
+Thumbs.db
