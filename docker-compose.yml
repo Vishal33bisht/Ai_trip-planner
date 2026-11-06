@@ -72,3 +72,4 @@ volumes:
 networks:
   aitrip-network:
     driver: bridge
+

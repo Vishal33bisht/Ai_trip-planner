@@ -53,3 +53,4 @@ spec:
       targetPort: 80
   selector:
     app: frontend
+
